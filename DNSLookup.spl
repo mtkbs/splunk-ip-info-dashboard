@@ -1,0 +1,12 @@
+| tstats summariesonly=true count from datamodel=Network_Traffic.All_Traffic where (All_Traffic.dest=167.206.200.64/27 OR All_Traffic.dest=72.10.108.0/24 OR All_Traffic.dest=64.202.80.0/20/nn OR All_Traffic.dest=192.160.243.0/24 OR All_Traffic.dest=192.160.244.0/24/nn) by All_Traffic.src
+| rename "All_Traffic.*" as "*"
+| where NOT cidrmatch("10.0.0.0/8", src) AND NOT cidrmatch("172.16.0.0/12", src) AND NOT cidrmatch("192.168.0.0/16", src) AND NOT cidrmatch("XXX.XX.X.X/XX", src) AND NOT cidrmatch("XXX.XX.X.X/XX", src) AND NOT cidrmatch("XXX.XX.X.X/XX", src) AND NOT cidrmatch("XXX.XX.X.X/XX", src) AND NOT cidrmatch("XXX.XX.X.X/XX", src)
+| where src!="0.0.0.0"
+| sort - count
+| head 50
+| lookup dnslookup clientip AS src OUTPUT clienthost AS hostname
+| where isnotnull(hostname) AND hostname!="" AND hostname!=src
+| eval org_domain=replace(hostname, "^.*?([^.]+\.[^.]+)$", "\1")
+| stats sum(count) as connections by src, hostname, org_domain
+| sort - connections
+| head 25
