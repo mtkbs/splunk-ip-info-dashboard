@@ -1,0 +1,11 @@
+| tstats summariesonly=true count from datamodel=Network_Traffic.All_Traffic where (All_Traffic.dest=XXX.XX.X.X/XX OR All_Traffic.destXXX.XX.X.X/XX OR All_Traffic.dest=XXX.XX.X.X/XX OR All_Traffic.dest=XXX.XX.X.X/XX OR All_Traffic.dest=XXX.XX.X.X/XX) AND All_Traffic.action=blocked by All_Traffic.src
+| rename "All_Traffic.*" as "*"
+| where NOT cidrmatch("10.0.0.0/8", src) AND NOT cidrmatch("172.16.0.0/12", src) AND NOT cidrmatch("192.168.0.0/16", src) AND NOT cidrmatch("XXX.XX.X.X/XX", src) AND NOT cidrmatch("XXX.XX.X.X/XX", src) AND NOT cidrmatch("XXX.XX.X.X/XX", src) AND NOT cidrmatch("XXX.XX.X.X/XX", src) AND NOT cidrmatch(XXX.XX.X.X/XX", src)
+| where src!="0.0.0.0"
+| sort - count
+| head 50
+| lookup dnslookup clientip AS src OUTPUT clienthost AS hostname
+| eval org_domain=if(isnull(hostname) OR hostname="" OR hostname=src, "no reverse DNS", replace(hostname, "^.*?([^.]+\.[^.]+)$", "\1"))
+| iplocation src
+| where isnotnull(lat) AND isnotnull(lon)
+| geostats sum(count) by org_domain globallimit=0 binspanlat=5 binspanlong=5
