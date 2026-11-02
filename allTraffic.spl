@@ -1,0 +1,4 @@
+| tstats summariesonly=true count from datamodel=Network_Traffic.All_Traffic by All_Traffic.src
+| rename "All_Traffic.*" as "*"
+| iplocation src
+| geostats sum(count) binspanlat=10 binspanlong=10
