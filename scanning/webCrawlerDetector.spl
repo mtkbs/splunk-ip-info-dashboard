@@ -1,0 +1,20 @@
+| tstats summariesonly=true count dc(All_Traffic.dest) as dests dc(All_Traffic.dest_port) as ports from datamodel=Network_Traffic.All_Traffic where (All_Traffic.dest=XXX.XX.X.X/XX OR All_Traffic.dest=XXX.XX.X.X/XX OR All_Traffic.dest=XXX.XX.X.X/XX OR All_Traffic.dest=XXX.XX.X.X/XX OR All_Traffic.dest=XXX.XX.X.X/XX) by All_Traffic.src, All_Traffic.action
+| rename "All_Traffic.*" as "*"
+| where NOT cidrmatch("10.0.0.0/8", src) AND NOT cidrmatch("172.16.0.0/12", src) AND NOT cidrmatch("192.168.0.0/16", src) AND NOT cidrmatch("XXX.XX.X.X/XX", src) AND NOT cidrmatch("XXX.XX.X.X/XX", src) AND NOT cidrmatch("XXX.XX.X.X/XX", src) AND NOT cidrmatch(XXX.XX.X.X/XX", src) AND NOT cidrmatch("XXX.XX.X.X/XX", src)
+| where src!="0.0.0.0"
+| stats sum(eval(if(action="blocked",count,0))) as blocked sum(eval(if(action="allowed",count,0))) as allowed sum(count) as total max(dests) as dests max(ports) as ports by src
+| sort - total
+| head 50
+| lookup dnslookup clientip AS src OUTPUT clienthost AS hostname
+| eval hostname=if(isnull(hostname) OR hostname="" OR hostname=src, "no reverse DNS", hostname)
+| eval category=case(
+    match(hostname,"(?i)(openai|anthropic|perplexity|bytespider|bytedance|commoncrawl|amazonbot|applebot|petalbot|ahrefs|semrush)"), "AI / web crawler",
+    match(hostname,"(?i)(shodan|censys|shadowserver|binaryedge|stretchoid|onyphe|leakix|criminalip|internet-census)"), "Known internet scanner",
+    match(hostname,"(?i)(amazonaws|googleusercontent|azure|digitalocean|linode|vultr|ovh|hetzner)"), "Cloud / hosting",
+    hostname="no reverse DNS", "No reverse DNS",
+    true(), "Other")
+| eval scan_behavior=if(ports>=10 OR dests>=5, "scanner-like", "normal")
+| eval blocked_pct=round(blocked/(blocked+allowed)*100,1)
+| table src, hostname, category, scan_behavior, dests, ports, blocked, allowed, blocked_pct, total
+| sort - total
+| head 100
