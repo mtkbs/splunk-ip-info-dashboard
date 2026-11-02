@@ -1,2 +1,2 @@
-# splunk-IPinfo-dashboard
+# splunk-ip-info-dashboard
 Splunk Dashboard
