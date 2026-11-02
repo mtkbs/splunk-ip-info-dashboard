@@ -3,7 +3,7 @@ Splunk dashboard designed to display and visualize ip traffic coming into a netw
 
 The project's directory system is as follows:
 
-splunk-ip-info-dashboard/
+```splunk-ip-info-dashboard/
 |--README.md
 |--allTraffic.spl <--- Nothing special here. Just a map with all the iplocatin data splunk has to make sure it's working correctly
 |--firewallTraffic/
