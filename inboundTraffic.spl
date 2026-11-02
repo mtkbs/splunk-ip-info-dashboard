@@ -1,0 +1,9 @@
+| tstats summariesonly=true count from datamodel=Network_Traffic.All_Traffic by All_Traffic.src, All_Traffic.dest, All_Traffic.action
+| rename "All_Traffic.*" as "*"
+| where cidrmatch("XXX.XX.X.X/XX", dest) OR cidrmatch("XXX.XX.X.X/XX", dest) OR cidrmatch("XXX.XX.X.X/XX", dest) OR cidrmatch("XXX.XX.X.X/XX", dest)
+| where NOT cidrmatch("10.0.0.0/8", src) AND NOT cidrmatch("172.16.0.0/12", src) AND NOT cidrmatch("192.168.0.0/16", src) AND NOT cidrmatch("XXX.XX.X.X/XX", src) AND NOT cidrmatch("XXX.XX.X.X/XX", src) AND NOT cidrmatch("XXX.XX.X.X/XX", src) AND NOT cidrmatch("XXX.XX.X.X/XX", src)
+| where src!="0.0.0.0"
+| iplocation src
+| stats sum(eval(if(action="allowed",count,0))) as allowed sum(eval(if(action="blocked",count,0))) as blocked sum(eval(if(action="unknown",count,0))) as unknown sum(count) as total dc(dest) as dest_count by src, City, Region, Country
+| sort - total
+| head 50
