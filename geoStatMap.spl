@@ -1,7 +1,0 @@
-| tstats summariesonly=true count from datamodel=Network_Traffic.All_Traffic where (All_Traffic.dest=xxxxx/nn OR All_Traffic.dest=xxxxx/nn OR All_Traffic.dest=xxxxx/nn OR All_Traffic.dest=xxxxx/nn OR All_Traffic.dest=xxxxx/nn) by All_Traffic.src, All_Traffic.action
-| rename "All_Traffic.*" as "*"
-| where NOT cidrmatch("10.0.0.0/8", src) AND NOT cidrmatch("172.16.0.0/12", src) AND NOT cidrmatch("192.168.0.0/16", src) AND NOT cidrmatch("xxxxx/nn", src) AND NOT cidrmatch("xxxxx/nn", src) AND NOT cidrmatch("xxxxx/nn", src) AND NOT cidrmatch("xxxxx/nn", src) AND NOT cidrmatch("xxxxx/nn", src)
-| where src!="0.0.0.0"
-| iplocation src
-| where isnotnull(lat) AND isnotnull(lon)
-| geostats sum(count) by action globallimit=5 binspanlat=10 binspanlong=10
