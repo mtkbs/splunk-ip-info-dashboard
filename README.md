@@ -1,1 +1,2 @@
-# splunk-inbound-geo-map
+# splunk-IPinfo-dashboard
+Splunk Dashboard
