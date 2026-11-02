@@ -19,6 +19,7 @@ The project's directory system is as follows:
 |  |__blockedIPSMap.spl
 |  |__blockedIPSMap.spl
 |--scanning/
-   |__webCrawlerDetector.spl <--- Very low tech solution to finding out if a domain name is on a list of common crawlers + a few handy keywords which categorize chances of scanning```
+   |__webCrawlerDetector.spl <--- Very low tech solution to finding out if a domain name is on a list of common crawlers + a few handy keywords which categorize chances of scanning
+```
 
 ## firewallTraffic
